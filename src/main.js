@@ -42,7 +42,27 @@ function createWindow() {
 }
 
 function createTray() {
-  tray = new Tray(path.join(__dirname, '..', 'build', 'icon.png'));
+  // Determine proper icon path based on whether we're in development or production
+  let iconPath;
+  if (app.isPackaged) {
+    // Production - need to use the app.getAppPath() approach
+    iconPath = path.join(process.resourcesPath, 'icon.png');
+  } else {
+    // Development
+    iconPath = path.join(__dirname, '..', 'build', 'icon.png');
+  }
+  
+  // Fallback to a basic version if the icon isn't found
+  try {
+    tray = new Tray(iconPath);
+  } catch (error) {
+    console.error('Failed to load tray icon:', error);
+    // Create an alternative icon programmatically if the file is missing
+    const { nativeImage } = require('electron');
+    const image = nativeImage.createEmpty();
+    const size = { width: 16, height: 16 };
+    tray = new Tray(image.resize(size));  
+  }
   const contextMenu = Menu.buildFromTemplate([
     { 
       label: 'Show Pomodoro Timer', 
