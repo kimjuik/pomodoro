@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Pomodoro Timer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <div id="timer">25:00</div>
+    <div id="controls">
+      <button id="start">Start</button>
+      <button id="pause" disabled>Pause</button>
+      <button id="reset">Reset</button>
+    </div>
+    <div id="mode-selector">
+      <button id="pomodoro" class="active">Pomodoro</button>
+      <button id="short-break">Short Break</button>
+      <button id="long-break">Long Break</button>
+    </div>
+    <div id="todo-container">
+      <h3>To-Do List</h3>
+      <div id="todo-form">
+        <input type="text" id="todo-input" placeholder="Add a task...">
+        <input type="number" id="estimate-input" placeholder="Est. time (min)" min="1" max="120">
+        <button id="add-todo">Add</button>
+      </div>
+      <ul id="todo-list"></ul>
+    </div>
+  </div>
+  <script src="renderer.js"></script>
+</body>
+</html>
