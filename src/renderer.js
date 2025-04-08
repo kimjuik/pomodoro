@@ -13,6 +13,8 @@ const todoInput = document.getElementById('todo-input');
 const estimateInput = document.getElementById('estimate-input');
 const addTodoButton = document.getElementById('add-todo');
 const todoList = document.getElementById('todo-list');
+const clockSoundButton = document.getElementById('clock-sound');
+const musicSoundButton = document.getElementById('music-sound');
 
 // Create a new element to display current task
 const currentTaskElement = document.createElement('div');
@@ -64,6 +66,12 @@ let isRunning = false;
 // Current task state
 let currentTask = null;
 
+// Sound state
+let clockSoundPlaying = false;
+let musicSoundPlaying = false;
+let clockSoundInterval = null;
+let musicAudio = null;
+
 // Helper function to format time as MM:SS
 function formatTime(seconds) {
   const minutes = Math.floor(seconds / 60);
@@ -84,6 +92,11 @@ function startTimer() {
   startButton.disabled = true;
   pauseButton.disabled = false;
   
+  // Automatically start the clock sound
+  if (!clockSoundPlaying) {
+    startClockSound();
+  }
+  
   timerId = setInterval(() => {
     currentTime--;
     updateDisplay();
@@ -94,6 +107,11 @@ function startTimer() {
       notifyUser();
       startButton.disabled = false;
       pauseButton.disabled = true;
+      
+      // Automatically stop the clock sound when timer ends
+      if (clockSoundPlaying) {
+        stopClockSound();
+      }
     }
   }, 1000);
 }
@@ -104,6 +122,11 @@ function pauseTimer() {
   isRunning = false;
   startButton.disabled = false;
   pauseButton.disabled = true;
+  
+  // Automatically stop the clock sound when timer is paused
+  if (clockSoundPlaying) {
+    stopClockSound();
+  }
 }
 
 // Reset the timer
@@ -350,6 +373,118 @@ function renderTodos() {
   });
 }
 
+// Sound control functions
+function toggleClockSound() {
+  if (clockSoundPlaying) {
+    stopClockSound();
+  } else {
+    // Only allow turning on clock sound if timer is running
+    if (isRunning) {
+      startClockSound();
+    } else {
+      // Provide visual feedback that clock can't be turned on when timer is paused
+      clockSoundButton.classList.add('disabled-feedback');
+      setTimeout(() => {
+        clockSoundButton.classList.remove('disabled-feedback');
+      }, 500);
+    }
+  }
+}
+
+function startClockSound() {
+  if (clockSoundPlaying) return;
+  
+  // Create a realistic clock ticking sound
+  function playTickSound() {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Create a very short sound that mimics a clock tick
+    const tickBuffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.03, audioContext.sampleRate);
+    const tickData = tickBuffer.getChannelData(0);
+    
+    // Generate a sharp click sound
+    for (let i = 0; i < tickData.length; i++) {
+      // Create a quick decay envelope
+      const decay = Math.exp(-5 * i / tickData.length);
+      // Add some randomness for wooden clock sound quality
+      tickData[i] = (Math.random() * 2 - 1) * decay * 0.5;
+    }
+    
+    // Play the sound
+    const tickSource = audioContext.createBufferSource();
+    tickSource.buffer = tickBuffer;
+    
+    // Add slight reverb for natural sound
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.2; // Control volume
+    
+    tickSource.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    tickSource.start();
+    
+    // Clean up after sound plays
+    setTimeout(() => {
+      audioContext.close();
+    }, 100);
+  }
+  
+  // Play a tick sound immediately
+  playTickSound();
+  
+  // Play tick sound at regular intervals (every 1 second)
+  clockSoundInterval = setInterval(playTickSound, 1000);
+  
+  clockSoundPlaying = true;
+  clockSoundButton.classList.add('active');
+  clockSoundButton.querySelector('.icon').innerHTML = '🔇';
+  clockSoundButton.querySelector('.label').innerHTML = 'Clock Off';
+}
+
+function stopClockSound() {
+  if (!clockSoundPlaying) return;
+  
+  clearInterval(clockSoundInterval);
+  clockSoundPlaying = false;
+  clockSoundButton.classList.remove('active');
+  clockSoundButton.querySelector('.icon').innerHTML = '🔊';
+  clockSoundButton.querySelector('.label').innerHTML = 'Clock';
+}
+
+function toggleMusic() {
+  if (musicSoundPlaying) {
+    stopMusic();
+  } else {
+    startMusic();
+  }
+}
+
+function startMusic() {
+  if (musicSoundPlaying) return;
+  
+  // Create music audio element
+  musicAudio = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3');
+  musicAudio.volume = 0.3;
+  musicAudio.loop = true;
+  musicAudio.play();
+  
+  musicSoundPlaying = true;
+  musicSoundButton.classList.add('active');
+  musicSoundButton.querySelector('.icon').innerHTML = '🔇';
+  musicSoundButton.querySelector('.label').innerHTML = 'Music Off';
+}
+
+function stopMusic() {
+  if (!musicSoundPlaying) return;
+  
+  musicAudio.pause();
+  musicAudio = null;
+  musicSoundPlaying = false;
+  musicSoundButton.classList.remove('active');
+  musicSoundButton.querySelector('.icon').innerHTML = '🎵';
+  musicSoundButton.querySelector('.label').innerHTML = 'Music';
+}
+
 // Event listeners
 startButton.addEventListener('click', startTimer);
 pauseButton.addEventListener('click', pauseTimer);
@@ -358,6 +493,8 @@ pomodoroButton.addEventListener('click', switchToPomodoro);
 shortBreakButton.addEventListener('click', switchToShortBreak);
 longBreakButton.addEventListener('click', switchToLongBreak);
 addTodoButton.addEventListener('click', addTodo);
+clockSoundButton.addEventListener('click', toggleClockSound);
+musicSoundButton.addEventListener('click', toggleMusic);
 
 // Handle form submission
 todoInput.addEventListener('keypress', (e) => {

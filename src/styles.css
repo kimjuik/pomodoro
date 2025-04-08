@@ -225,6 +225,55 @@ button:disabled {
   border: 1px solid #91d5ff;
 }
 
+/* Sound Control Styles */
+#sound-controls {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.sound-button {
+  background-color: #f5f5f5;
+  color: #555;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.sound-button .icon {
+  margin-right: 4px;
+  font-size: 11px;
+}
+
+.sound-button:hover {
+  background-color: #f0f0f0;
+  border-color: #ccc;
+}
+
+.sound-button.active {
+  background-color: #4dabf7;
+  color: white;
+  border-color: #3d8bd4;
+}
+
+.disabled-feedback {
+  animation: shake 0.4s ease-in-out;
+  background-color: #ffe0e0 !important;
+  border-color: #ffb0b0 !important;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
 /* Rest Alert Styles */
 .rest-alert {
   position: fixed;
