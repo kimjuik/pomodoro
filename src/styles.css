@@ -28,6 +28,12 @@
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -36,9 +42,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   user-select: none;
   line-height: 1.5;
+  padding: 0;
+  margin: 0;
 }
 
 #app {
@@ -47,9 +54,11 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   padding: 24px;
   text-align: center;
-  width: 350px;
-  max-height: 88vh;
+  width: 100%;
+  max-width: 350px;
+  max-height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   border: 1px solid var(--border-color);
 }
 
@@ -159,12 +168,14 @@ button:disabled {
 
 #todo-form {
   display: flex;
+  flex-wrap: wrap;
   margin-bottom: 18px;
   gap: 8px;
 }
 
 #todo-input {
-  flex-grow: 1;
+  flex: 1 1 150px;
+  min-width: 0;
   padding: 12px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -181,7 +192,7 @@ button:disabled {
 }
 
 #estimate-input {
-  width: 90px;
+  flex: 0 0 70px;
   padding: 12px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -198,6 +209,7 @@ button:disabled {
 }
 
 #add-todo {
+  flex: 0 0 60px;
   background-color: var(--secondary-color);
   color: var(--gray-900);
   padding: 12px;
@@ -213,6 +225,7 @@ button:disabled {
   list-style-type: none;
   margin: 0;
   padding: 0;
+  width: 100%;
 }
 
 .todo-item {
@@ -225,6 +238,8 @@ button:disabled {
   transition: all 0.2s ease;
   border-radius: 8px;
   margin-bottom: 6px;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 .todo-item:hover {
@@ -235,19 +250,22 @@ button:disabled {
 .current-task-highlight {
   background-color: rgba(94, 96, 206, 0.15);
   border-left: 4px solid var(--primary-color);
-  padding-left: 10px;
+  padding-left: 8px;
   border-radius: 6px;
 }
 
 .todo-text {
-  flex-grow: 1;
+  flex: 1;
+  min-width: 0;
   margin-right: 8px;
   word-break: break-word;
   font-size: 14px;
   color: var(--text-color);
+  overflow-wrap: break-word;
 }
 
 .todo-estimate {
+  flex: 0 0 auto;
   background-color: var(--gray-700);
   border-radius: 20px;
   padding: 4px 8px;
@@ -262,6 +280,7 @@ button:disabled {
 .todo-actions {
   display: flex;
   gap: 6px;
+  flex: 0 0 auto;
 }
 
 .todo-actions button {
